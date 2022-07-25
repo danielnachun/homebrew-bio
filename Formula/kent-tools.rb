@@ -1,8 +1,9 @@
 class KentTools < Formula
   desc "Utilities for the UCSC Genome Browser"
   homepage "https://genome.ucsc.edu/"
-  url "https://hgdownload.soe.ucsc.edu/admin/exe/userApps.v401.src.tgz"
-  sha256 "3608689a07a6327f5695672a804ef5f35c9d680c114b0ee947ca2a4f3b768514"
+  url "https://github.com/ucscGenomeBrowser/kent/archive/refs/tags/v434_base.tar.gz"
+  version "434"
+  sha256 "5aeb7768a13486da75f67b67e4969809628363bb5ab4c4cd6312ba93394c085a"
   head "git://genome-source.cse.ucsc.edu/kent.git"
 
   livecheck do
@@ -17,7 +18,7 @@ class KentTools < Formula
   end
 
   depends_on "libpng"
-  depends_on "mysql@5.7"
+  depends_on "mariadb"
   depends_on "openssl@1.1"
 
   uses_from_macos "rsync"
@@ -29,7 +30,7 @@ class KentTools < Formula
 
   def install
     libpng = Formula["libpng"]
-    mysql = Formula["mysql@5.7"]
+    mysql = Formula["mariadb"]
 
     args = ["userApps", "BINDIR=#{bin}", "SCRIPTS=#{bin}"]
     args << "MACHTYPE=#{`uname -m`.chomp}"
@@ -38,7 +39,7 @@ class KentTools < Formula
     args << "MYSQLINC=#{mysql.opt_include}/mysql"
     args << "MYSQLLIBS=-L#{mysql.opt_lib} -lmysqlclient -lz -lstdc++"
 
-    cd build.head? ? "src" : "kent/src" do
+    cd "src" do
       inreplace "parasol/makefile", "DESTDIR=${HOME}/bin", ""
       system "make", *args
     end
